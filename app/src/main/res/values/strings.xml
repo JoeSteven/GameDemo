@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GameDemo</string>
+    <string name="photo_file_provider">com.joey.gamedemo.fileprovider</string>
+</resources>
