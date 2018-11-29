@@ -23,8 +23,8 @@ class GameView(context: Context, attributeSet: AttributeSet): SurfaceView(contex
     private  val player = Player()
     private  val paint = Paint()
     private var isPlaying = false
-    private val enemy = ArrayList<SpaceJet>(6)
-    private val stars = ArrayList<Star>(100)
+    private val enemy = mutableListOf<SpaceJet>()//ArrayList<SpaceJet>(6)
+    private val stars = mutableListOf<Star>()
     private var gameOver:Boolean = false
     private var score:Int = 0
     private val gameOverSize = 35
@@ -39,7 +39,8 @@ class GameView(context: Context, attributeSet: AttributeSet): SurfaceView(contex
             context.lifecycle.addObserver(this)
         }
         enemy.add(SpaceJet())
-        for (i in 0..99) {
+
+        while (stars.size < 100) {
             stars.add(Star())
         }
     }
@@ -60,16 +61,16 @@ class GameView(context: Context, attributeSet: AttributeSet): SurfaceView(contex
 
     private fun update() {
         player.update()
-        for(star in stars) {
-            star.update()
+        stars.forEach {
+            it.update()
         }
         val level = getLevel()
-        for (jet in enemy) {
-            jet.update(player.x, player.y, player.bitmap.width, player.bitmap.height, level)
-            if (jet.boom) {
-                gameOver = jet.boom
+        enemy.forEach {
+            it.update(player.x, player.y, player.bitmap.width, player.bitmap.height, level)
+            if (it.boom) {
+                gameOver = it.boom
             }
-            if (jet.miss) {
+            if (it.miss) {
                 score += 1
             }
         }
@@ -93,9 +94,9 @@ class GameView(context: Context, attributeSet: AttributeSet): SurfaceView(contex
         canvas.drawColor(Color.BLACK)
         //draw star
         paint.color = Color.WHITE
-        for (star in stars) {
-            paint.strokeWidth = star.size()
-            canvas.drawPoint(star.x.toFloat(), star.y.toFloat() ,paint)
+        stars.forEach {
+            paint.strokeWidth = it.size()
+            canvas.drawPoint(it.x.toFloat(), it.y.toFloat() ,paint)
         }
 
         // drawing player
@@ -105,13 +106,12 @@ class GameView(context: Context, attributeSet: AttributeSet): SurfaceView(contex
                 paint)
 
         // draw space jet
-        for (jet in enemy) {
-            canvas.drawBitmap(jet.bitmap,
-                    jet.x.toFloat(),
-                    jet.y.toFloat(),
+        enemy.forEach {
+            canvas.drawBitmap(it.bitmap,
+                    it.x.toFloat(),
+                    it.y.toFloat(),
                     paint)
         }
-
 
         if (gameOver) {
             //draw game over
